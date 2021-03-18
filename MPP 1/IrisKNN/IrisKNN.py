@@ -3,6 +3,7 @@
 #imports
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
 import operator
 
 def read_file(name):
@@ -39,30 +40,50 @@ def calculate_dist_from_train(testVec, trainsetVec):
     return distances
 
 def find_k_nearest_neigh(testsetVec, trainsetVec, k):
-    distances = sorted(calculate_dist_from_train(testsetVec, trainsetVec), key=operator.itemgetter(2))   
-    
-    print_list(distances, k)
+    distances = sorted(calculate_dist_from_train(testsetVec, trainsetVec), key=operator.itemgetter(2))
 
     kNearest = []
     for i in range(k):
         kNearest.append(distances[i])
 
+    #for i in range(len(kNearest)):
+    #   print(distances[i])
+   
     return kNearest 
-    
-def print_list(list, k):
-    for i in range(k):
-        print(list[i])
 
-        #dokonczyc to zadanie
 def make_prediciton(kNearestSet):
     opt = [["Iris-setosa", 0],["Iris-versicolor", 0],["Iris-virginica", 0]]
     for i in range(len(kNearestSet)):
-        if (kNearestSet[i][0][4] == "Iris-setosa"):
+        if (kNearestSet[i][1][4] == "Iris-setosa"):
             opt[0][1] += 1
-        elif (kNearestSet[i][0][4] == "Iris-versicolor"):
+        elif (kNearestSet[i][1][4] == "Iris-versicolor"):
             opt[1][1] += 1
-        elif (kNearestSet[i][0][4] == "Iris-virginica"):
+        elif (kNearestSet[i][1][4] == "Iris-virginica"):
             opt[2][1] += 1
+    
+    return max(opt, key=operator.itemgetter(1))[0] 
+
+def calculate_acc(predictions):
+    correct = 0
+    for i in range(len(predictions)):
+        if predictions[i][0][4] == predictions[i][1]:
+            correct += 1
+    return (correct/float(len(predictions))) * 100.0
+
+def guess(testsetVec, trainsetVec, k):
+    predictions = []
+    for i in range(len(testsetVec)):
+       kNearest = find_k_nearest_neigh(testsetVec[i], trainsetVec, k)
+       predictions.append([testsetVec[i], make_prediciton(kNearest)])
+    return predictions
+
+def process_user_input(columnNames):
+    wektor = []
+    for i in range(len(columnNames) - 1):
+        print('Podaj', columnNames[i])
+        value = float(user_input())
+        wektor.append(value)
+    return wektor
 
 def main():
     dataset = read_file('iris.csv')
@@ -76,11 +97,38 @@ def main():
     testsetVec = create_vec(testset)
 
     #test
-    predictions = []
+    predictions = guess(testsetVec, trainsetVec, k)
     for i in range(len(testsetVec)):
-       kNearest = find_k_nearest_neigh(testsetVec[i], trainsetVec, k)
-       predictions.append([testsetVec[i], 'pradykcja algorytmu {}' + str(make_prediciton(kNearest))])
+       print('TEST#'+str(i+1), predictions[i])
+    print("Dokladnosc dla testow dla podanego k ---> " + str(calculate_acc(predictions)))
+
+
+    #petla do wpisywania kolejnych wartosci
+    while(True):
+        print('Czy chcesz wpisywac kolejne wektory do sprawdzenia (y/n) ', end='')
+        
+        wpisywac = user_input()
+        if (wpisywac != 'y'):
+            break
+        
+        wektor = process_user_input(dataset.columns)
+        predict = make_prediciton(find_k_nearest_neigh(wektor, trainsetVec, k))
+        print('Wynik predykcji to', predict)
     
+    #na plusa
+    print('Dodatkowa wlasnosc.\nGraf efektywnosci w zaleznosci od liczby k')
+    n = 105
+    y = []
+    for i in range(1, n):
+        pred = guess(testsetVec, trainsetVec, i)
+        y.append(calculate_acc(pred))
+
+    plt.scatter(range(1, n), y, marker='.')
+    plt.xlabel('k')
+    plt.ylabel('dokladnosc (%)')
+    plt.grid()
+    plt.show()
+        
     
 if __name__ == '__main__':
     main()
