@@ -11,6 +11,7 @@ class Perceptron:
         self.alpha = alpha
     
     def decide(self, X):
+        #warunek i decyzja algorytmu
         if (calc_dot(self.wagi, X) >= self.theta):
             return 1
         return 0
@@ -29,6 +30,7 @@ class Perceptron:
         self.theta += (decyzja_prawidlowa - faktyczna_decyzja) * self.alpha
     
 def start_test(perceptron, testset):
+    #metoda, ktora jest odpowiedzialna za przeprowadzenie testu
     decisions = []
     for i in range(len(testset)):
         vecX = []
@@ -51,7 +53,7 @@ def calc_dot(W, X):
     return sum
 
 def standarize(X):
-    #formula ze strony
+    #formula ze strony (bez niej wyniki były jeszcze bardziej absurdalne i bardzo rozstrzelone)
     #https://machinelearningmastery.com/standardscaler-and-minmaxscaler-transforms-in-python/
     X_res = X
 
@@ -82,7 +84,7 @@ def main():
     alpha = float(sys.argv[2])
     t = float(sys.argv[3])
     
-    #dzielenie na podzbiory
+    #dzielenie na podzbiory i standaryzacja
     trainset = dataset.sample(frac = 0.75).reset_index(drop=True)
     testset = dataset.drop(trainset.index).reset_index(drop=True)
     
@@ -95,8 +97,8 @@ def main():
     perceptron = Perceptron(len(dataset.columns) - 1, alpha)
 
     #petla
-    n = 100
-    accset = []
+    n = 300
+    accset = [] #lista zapisanych skutecznosci z kazdego pomiaru
     for i in range(n):
         perceptron.train(X_train, poprawna_train)
         my_dec = start_test(perceptron, X_test)
@@ -104,7 +106,9 @@ def main():
         print("Test #" + str(i), acc)
         accset.append(acc)
 
-    plt.plot(range(n), accset) 
+    plt.plot(range(n), accset)
+    plt.xlabel("liczba szkoleń")
+    plt.ylabel("skuteczność")
     plt.show()
 
     
