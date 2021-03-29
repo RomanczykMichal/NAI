@@ -12,7 +12,7 @@
     <Name>MPP2</Name>
     <RootNamespace>MPP2</RootNamespace>
     <LaunchProvider>Standard Python launcher</LaunchProvider>
-    <CommandLineArguments>".\Data\sonar.csv" 0.01 0.8</CommandLineArguments>
+    <CommandLineArguments>".\Data\iris.csv" 0.01 99</CommandLineArguments>
     <EnableNativeCodeDebugging>False</EnableNativeCodeDebugging>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
