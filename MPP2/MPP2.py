@@ -25,10 +25,12 @@ class Perceptron:
         #W` = W + (D - Y)aX
         for i in range(len(self.wagi)):
             self.wagi[i] += (decyzja_prawidlowa - faktyczna_decyzja) * self.alpha * X_vec[i]
+        self.wagi = normalize_vec(self.wagi)
+        
         #theta
         self.theta += (decyzja_prawidlowa - faktyczna_decyzja) * self.alpha
-        
-        self.wagi = normalize_vec(self.wagi)
+        dlugosc_wag = np.sqrt(calc_dot(self.wagi, self.wagi))
+        self.theta /= dlugosc_wag
     
 def start_test(perceptron, testset):
     #metoda, ktora jest odpowiedzialna za przeprowadzenie testu
@@ -59,29 +61,6 @@ def normalize_vec(X):
         X_norm.append(X[i] / dlugosc)
     return X_norm
 
-def standarize(X):
-    #formula ze strony (bez niej wyniki były jeszcze bardziej absurdalne i bardzo rozstrzelone)
-    #https://machinelearningmastery.com/standardscaler-and-minmaxscaler-transforms-in-python/
-    X_res = X
-
-    count = len(X)
-    for i in range(len(X[0]) - 1):
-        sum = 0
-        for j in range(len(X)):
-            sum += X[j][i]
-        mean = sum / count
-
-        sum_sd = 0 
-        for j in range(len(X)):
-            sum_sd += (X[j][i] - mean) ** 2
-        standard_deviation = np.sqrt(sum_sd / count)
-
-        for j in range(len(X)):
-            X_res[j][i] = ((X[j][i] - mean) / standard_deviation)
-
-    return X_res
-
-
 def main():
     if (len(sys.argv[1:]) != 3):
         print("Zla liczba argumentow - wymagane 3")
@@ -91,8 +70,8 @@ def main():
     alpha = float(sys.argv[2])
     t = float(sys.argv[3])
     
-    #dzielenie na podzbiory i standaryzacja
-    datastand = standarize(data.values.tolist())
+    #dzielenie na podzbiory
+    datastand = data.values.tolist()
     dataset = pd.DataFrame(datastand)
 
     trainset = dataset.sample(frac = 0.75).reset_index(drop=True)
@@ -105,7 +84,7 @@ def main():
     poprawna_test = [sublist[-1] for sublist in testset.values.tolist()]
     
     perceptron = Perceptron(len(dataset.columns) - 1, alpha)
-
+    
     #uczenie
     n = 1
     accset = [0]
@@ -115,7 +94,7 @@ def main():
         my_dec = start_test(perceptron, X_test)
         acc = calculate_acc(poprawna_test, my_dec)
         accset.append(acc)
-        print("Test #" + str(n), "Dokladnosc " + str(acc), "\nWagi", perceptron.wagi)
+        print("Test #" + str(n), "Dokladnosc " + str(acc), "\nWagi", perceptron.wagi, "Prog " + str(perceptron.theta))
         n += 1
 
     print("Perceptron wyuczony na odpowiedni próg.\nWylacz graf zeby kontynuowac")
@@ -153,3 +132,13 @@ def main():
     
 if __name__ == "__main__":
     main()
+
+#*Wnioski
+#-Zrezygnowalem ze standaryzacji, poniewaz zaburzala ona wartosci danych
+#Dodatkowo przysparzala ona problemow zwiazanych z przyjmowaniem wartosci od uzytkownika,
+#poniewaz podany wektor musial byc dodatkowo standaryzowany z pozostalymi danymi 
+#-Wazna jest dobre dobranie alphy, aby perceptron mial szanse dokladnie ustawic swoje progi.
+#--Dla zbioru iris Przy alphie=0.5 otrzymamy wynik w 1 iteracji, ale progi beda zupenie inne, niz przy alphie=0.01 i 20 iteracjach.
+#  Druga opcja ma wieksza skutecznosc odpowiedzi przy podawaniu wektora recznie.
+#--Dla zbioru sonar, ktory ma o wiele wieksza liczbe kolumn uczenie na bardzo malej alphie trwa zdecydowanie zbyt dlugo i wartosc z
+#  przedzialu 0.01-0.03 jest optymalna
