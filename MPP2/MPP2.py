@@ -74,8 +74,8 @@ def main():
     datastand = data.values.tolist()
     dataset = pd.DataFrame(datastand)
 
-    trainset = dataset.sample(frac = 0.75).reset_index(drop=True)
-    testset = dataset.drop(trainset.index).reset_index(drop=True)
+    trainset = dataset.sample(frac = 0.75)
+    testset = dataset.drop(trainset.index)
     
     X_train = [sublist[0:-1] for sublist in trainset.values.tolist()]
     poprawna_train = [sublist[-1] for sublist in trainset.values.tolist()]
