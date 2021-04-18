@@ -12,7 +12,7 @@
     <Name>MPP3</Name>
     <RootNamespace>MPP3</RootNamespace>
     <LaunchProvider>Standard Python launcher</LaunchProvider>
-    <CommandLineArguments>"./Data/train.csv" "./Data/test.csv" 0.8 10</CommandLineArguments>
+    <CommandLineArguments>"./Data/train.csv" "./Data/test.csv" 0.8 50</CommandLineArguments>
     <EnableNativeCodeDebugging>False</EnableNativeCodeDebugging>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
@@ -34,7 +34,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Data\test.csv" />
-    <Content Include="Data\TextFile1.txt" />
     <Content Include="Data\train.csv" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
