@@ -1,6 +1,7 @@
 #Naiwny klasyfikator bayesa
 import pandas as pd
 import numpy as np
+import matplotlib.pyplot as plt
 
 #0 - spam
 #1 - nie spam
@@ -26,6 +27,7 @@ def main():
     #dane
     words = open('./data/word_list.txt', 'r', encoding = 'utf-8').read().splitlines()
     data = pd.read_csv('./data/data.csv')
+
 
     trainset = data.sample(frac = 0.8)
     testset = data.drop(trainset.index)
@@ -107,7 +109,6 @@ def main():
     r = macierz[0][0] / (macierz[0, 0] + macierz[0, 1]) 
     f = 2 * p * r / (p + r)
     print('dokladnosc: ', d, ' fmiara: ', f)
-
 
 if __name__ == '__main__':
     main()

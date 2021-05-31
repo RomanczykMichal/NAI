@@ -46,7 +46,7 @@ def get_points(clusters):
     return result
 
 def plot(centroids, points, axs):
-    colors = ['b', 'g', 'r']
+    colors = ['b', 'g', 'r', 'm']
 
     for i in range(len(centroids)):
         color = colors[i]
